@@ -6,6 +6,7 @@ body {
     margin: 0; /* Remove default body margin */
     padding: 0; /* Remove default body padding */
     overflow-x: hidden; /* Prevent horizontal scrollbar from potential layout issues */
+    overflow-y: auto; /* Allow scrolling on the main page */
 }
 .container {
     max-width: 100%; /* Make container full width */
@@ -22,13 +23,26 @@ body {
 .gallery-item {
     background-color: #111; /* Slightly lighter than body for item background */
     overflow: hidden;
-    /* No border-radius or box-shadow for a tiled look */
     position: relative; /* For overlays like video duration */
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     padding-bottom: 100%; /* Makes the item square, based on width */
+    cursor: pointer; /* Indicate clickable items */
+
+    /* Initial state for staggered fade-in */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Default transition, overridden by JS initially */
+
+    /* Hover effect for gallery items */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.gallery-item:hover {
+    transform: scale(1.03); /* Slightly scale up on hover */
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4); /* Subtle cyan glow on hover */
+    z-index: 5; /* Bring hovered item to front slightly */
 }
 .gallery-item img,
 .gallery-item video {
@@ -63,7 +77,21 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+
+    /* Header entrance animation */
+    opacity: 0;
+    transform: translateY(-50px);
+    animation: headerSlideIn 0.8s ease-out forwards; /* Animation controlled by CSS */
+    animation-delay: 0.2s; /* Delay after page loads */
 }
+
+@keyframes headerSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .header-section h1 {
     font-size: 1.2em; /* Smaller title */
     font-weight: 600; /* Semi-bold */
@@ -79,4 +107,62 @@ body {
 }
 .header-section .icon:hover {
     color: #fff;
+}
+
+/* --- Styles for the Full-screen Photo Zoom Modal --- */
+.modal-overlay {
+    position: fixed; /* Stay in place even if page scrolls */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center;
+    align-items: center;
+    visibility: hidden; /* Hidden by default */
+    opacity: 0; /* Start invisible for transition */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-content-img {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain; /* Ensure the whole image is visible */
+    transform: scale(0.6); /* Start smaller for pronounced zoom-in effect */
+    opacity: 0; /* Start invisible for the content */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.modal-overlay.show .modal-content-img {
+    transform: scale(1); /* Zoom to actual size */
+    opacity: 1; /* Fade in */
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+    z-index: 1001; /* Above the image */
+}
+
+.close-modal-btn:hover,
+.close-modal-btn:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
 }
